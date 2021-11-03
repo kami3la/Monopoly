@@ -236,7 +236,6 @@ export default {
             }
           } else if (cell.name === 'challenge') {
             this.challenge = Challenges[randomInteger(0, 1)]
-            console.log(this.challenge.correctAnswer)
           }
           this.onStep(cell);
         }
@@ -247,6 +246,12 @@ export default {
         setTimeout(() => this.$refs.buttonRole.style.pointerEvents = "none", 0);
         setTimeout(() => this.$refs.inputWrapper.style.display = "flex", 0);
       }
+      if (this.challenge.description) {
+        const element = document.createElement('p');
+        const text = document.createTextNode(this.challenge.description + '?');
+        element.appendChild(text);
+        this.$refs.inputWrapper.prepend(element);
+      }
     },
     answer() {
       const cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
@@ -254,7 +259,7 @@ export default {
       const oldPoints = this.currentPlayer.points;
 
       this.$refs.inputWrapper.style.display = "none";
-      if (input.value == cell.correctAnswer || (this.challenge.correctAnswer.indexOf(input.value) != -1)) {
+      if (input.value == cell.correctAnswer || (this.challenge.correctAnswer ? (this.challenge.correctAnswer.indexOf(input.value) != -1) : false)) {
         if (cell.points) {
           this.currentPlayer.points += cell.points;
         } else {
@@ -262,6 +267,7 @@ export default {
         }
         setTimeout(() => this.$refs.text1.style.display = "flex", 0);
         setTimeout(() => this.$refs.text1.style.display = "none", 1000);
+        this.challenge = '';
       } else {
         setTimeout(() => this.$refs.text2.style.display = "flex", 0);
         setTimeout(() => this.$refs.text2.style.display = "none", 1000);
