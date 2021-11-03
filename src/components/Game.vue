@@ -18,7 +18,7 @@
           <table class="players-info">
             <tr>
               <th v-for='player in players' :key='player.id'>
-                <span v-show='player === currentPlayer'>↓</span>
+                <span v-show='player === currentPlayer' class="turn">↓</span>
               </th>
             </tr>
             <tr>
@@ -35,7 +35,7 @@
               <div class="dices">
                 <Dice class="dice" v-for='(dice, i) in dices' :value='dice' :key="i" />
               </div>
-              <button @click="roll">Rzuć kośćmi</button>
+              <button @click="roll" ref="buttonRole">Rzuć kośćmi</button>
             </div>
             <div class="actions-input" ref="inputWrapper">
               <input placeholder="Wpisz odpowiedź..." id="input" />
@@ -54,14 +54,16 @@
 import Cell from './Cell'
 import Player from './Player'
 import Dice from './Dice'
+import { Challenges } from '../constants/Challenges'
 
 const randomInteger = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min))
 }
-const randomDice = () => randomInteger(1, 5)
+const randomDice = () => randomInteger(1, 6)
 
 class DesktopCell {
-  constructor(moveDir, image) {
+  constructor(name, moveDir, image) {
+    this.name = name
     this.moveDir = moveDir
     this.image = image
   }
@@ -69,53 +71,33 @@ class DesktopCell {
   onStepOverStart() {
     // Does nothing by default
   }
-
-  onStop() {
-    // Does nothing by default
-  }
 }
 
 class BuildingCell extends DesktopCell {
   constructor(moveDir, id, description, correctAnswer, points, name) {
     super(moveDir)
+    this.moveDir = moveDir
     this.id = id
     this.description = description
     this.correctAnswer = correctAnswer
     this.points = points
     this.name = name
   }
-
-  onStop(player, cell) {
-    const input = document.getElementById('input');
-    const button = document.getElementById('button');
-
-    button.addEventListener('click', () => {
-      if (input.value === cell.correctAnswer) {
-        player.points += this.points
-      }
-    });
-  }
 }
 
 class ChallengeCell extends DesktopCell {
   constructor(moveDir) {
-    super(moveDir, 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867702/wykrzyknik_iapdmc.png')
-  }
-}
-
-class ChanceCell extends DesktopCell {
-  constructor(moveDir) {
-    super(moveDir, 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867702/wykrzyknik_iapdmc.png')
+    super('challenge', moveDir, 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867702/wykrzyknik_iapdmc.png')
   }
 }
 
 class StartCell extends DesktopCell {
   constructor(moveDir) {
-    super(moveDir, 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867923/start_drivuq.png');
+    super('start', moveDir, 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867923/start_drivuq.png');
   }
 
   onStepOverStart(player) {
-    return player.points += 150;
+    return player.points += 20;
   }
 }
 
@@ -128,9 +110,9 @@ class DesktopPlayer {
   }
 }
 
-const parkingCell = new DesktopCell('up', '')
-const jailCell = new DesktopCell('right', 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867760/wiezienie_wtpaoa.png')
-const toJailCell = new DesktopCell('down', 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867761/dowiezenia_bwkp0w.png')
+const parkingCell = new DesktopCell('parking', 'up', '')
+const jailCell = new DesktopCell('jail', 'right', 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867760/wiezienie_wtpaoa.png')
+const toJailCell = new DesktopCell('toJail', 'down', 'https://res.cloudinary.com/dyj4k9tr0/image/upload/v1635867761/dowiezenia_bwkp0w.png')
 const startCell = new StartCell('left', '')
 
 let cells = new Array(6);
@@ -144,7 +126,7 @@ cells[5][12] = new BuildingCell('left', 1, '2 · 3', 6, 2, '+2 pkt')
 cells[5][11] = new ChallengeCell('left')
 cells[5][10] = new BuildingCell('left', 1, '3 · 3', 9, 2, '+2 pkt')
 cells[5][9] = new BuildingCell('left', 2, '4 · 3', 12, 3, '+3 pkt')
-cells[5][8] = new ChanceCell('left')
+cells[5][8] = new ChallengeCell('left')
 cells[5][7] = new BuildingCell('left', 2, '4 · 4', 16, 3, '+3 pkt')
 cells[5][6] = new BuildingCell('left', 2, '5 · 4', 20, 3, '+3 pkt')
 cells[5][5] = new ChallengeCell('left')
@@ -155,7 +137,7 @@ cells[5][1] = new BuildingCell('left', 4, '7 · 6', 42, 5, '+5 pkt')
 cells[5][0] = parkingCell
 cells[4][0] = new BuildingCell('up', 4, '5 · 7', 35, 5, '+5 pkt')
 cells[3][0] = new BuildingCell('up', 4, '4 · 9', 36, 5, '+5 pkt')
-cells[2][0] = new ChanceCell('up')
+cells[2][0] = new ChallengeCell('up')
 cells[1][0] = new BuildingCell('up', 5, '5 · 9', 45, 6, '+6 pkt')
 cells[0][0] = jailCell
 cells[0][1] = new BuildingCell('right', 5, '6 · 8', 48, 6, '+6 pkt')
@@ -167,7 +149,7 @@ cells[0][6] = new BuildingCell('right', 7, '7 · 9', 63, 8, '+8 pkt')
 cells[0][7] = new BuildingCell('right', 7, '4 · 12', 48, 8, '+8 pkt')
 cells[0][8] = new ChallengeCell('right')
 cells[0][9] = new BuildingCell('right', 7, '12 · 6', 72, 8, '+8 pkt')
-cells[0][10] = new ChanceCell('right')
+cells[0][10] = new ChallengeCell('right')
 cells[0][11] = new BuildingCell('right', 8, '8 · 8', 64, 9, '+9 pkt')
 cells[0][12] = new BuildingCell('right', 8, '9 · 8', 72, 9, '+9 pkt')
 cells[0][13] = toJailCell
@@ -182,8 +164,10 @@ export default {
     return {
       dices: [6, 6],
       cells: cells,
+      throws: 0,
       turn: 0,
-      players: [new DesktopPlayer(1), new DesktopPlayer(2), new DesktopPlayer(3), new DesktopPlayer(4)]
+      players: [new DesktopPlayer(1), new DesktopPlayer(2), new DesktopPlayer(3), new DesktopPlayer(4)],
+      challenge: ''
     }
   },
   components: {
@@ -202,6 +186,13 @@ export default {
       this.movePlayer();
     },
     movePlayer() {
+      if (this.throws === 2) {
+        this.throws = 0;
+        this.currentPlayer.points -= 30
+        this.currentPlayer.i = 0
+        this.currentPlayer.j = 0
+        this.turn += 1;
+      }
       let steps = this.dices.reduce((acc, val) => acc + val)
       let cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
       const stepInterval = setInterval(() => {
@@ -226,28 +217,49 @@ export default {
         steps -= 1
         if (steps === 0) {
           clearInterval(stepInterval)
-          this.onStepp(cell);
-          if (!cell.description) {
+          if (!cell.description && cell.name !== 'challenge') {
+            switch (cell.name) {
+              case 'parking':
+                break
+              case 'jail':
+                break
+              case 'toJail':
+                this.currentPlayer.j -= 13
+                this.currentPlayer.points -= 30
+                break
+            }
             const [d1, d2] = this.dices
             if (d1 !== d2) {
               this.turn += 1;
+            } else {
+              this.throws += 1
             }
+          } else if (cell.name === 'challenge') {
+            this.challenge = Challenges[randomInteger(0, 1)]
+            console.log(this.challenge.correctAnswer)
           }
+          this.onStep(cell);
         }
       }, 10)
     },
-    onStepp(cell) {
-      if (cell.description) {
-        this.$refs.inputWrapper.style.display = "flex";
+    onStep(cell) {
+      if (cell.description || this.challenge.description) {
+        setTimeout(() => this.$refs.buttonRole.style.pointerEvents = "none", 0);
+        setTimeout(() => this.$refs.inputWrapper.style.display = "flex", 0);
       }
     },
     answer() {
       const cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
       const input = document.getElementById('input');
+      const oldPoints = this.currentPlayer.points;
 
       this.$refs.inputWrapper.style.display = "none";
-      if (input.value == cell.correctAnswer) {
-        this.currentPlayer.points += cell.points;
+      if (input.value == cell.correctAnswer || (this.challenge.correctAnswer.indexOf(input.value) != -1)) {
+        if (cell.points) {
+          this.currentPlayer.points += cell.points;
+        } else {
+          this.currentPlayer.points += 10
+        }
         setTimeout(() => this.$refs.text1.style.display = "flex", 0);
         setTimeout(() => this.$refs.text1.style.display = "none", 1000);
       } else {
@@ -255,8 +267,11 @@ export default {
         setTimeout(() => this.$refs.text2.style.display = "none", 1000);
       }
       const [d1, d2] = this.dices
-      if (d1 !== d2) {
+      if (d1 !== d2 || (d1 === d2 && oldPoints === this.currentPlayer.points)) {
         this.turn += 1;
+        this.throws = 0;
+      } else {
+        this.throws += 1
       }
     }
   }
@@ -360,5 +375,9 @@ export default {
 
 .actions-text2 {
   color: #FF0000;
+}
+
+.turn {
+  font-size: 1.5em;
 }
 </style>
