@@ -1,11 +1,11 @@
 <template>
   <td v-if="buildingCard">
     <div class="building-card">
-    <div class="header" :class='"-set" + id'>{{ name }}</div>
-    <div class="body">
-      <div>{{ description }}</div>
-      <div><Player v-for='playerId in playersIds' :id='playerId' :key='playerId' /></div>
-    </div>
+      <div class="header" :class='"-set" + id'>{{ name }}</div>
+      <div class="body">
+        <div>{{ description }}</div>
+        <div><Player v-for='playerId in playersIds' :id='playerId' :key='playerId' /></div>
+      </div>
     </div>
   </td>
   <td v-else-if="image" class="corner image" :style="defaultImage">
@@ -21,7 +21,7 @@ import Player from './Player'
 
 export default {
   name: 'Cell',
-  props: ['id', 'name', 'description', 'points', 'i', 'j', 'players', 'image'],
+  props: ['id', 'name', 'description', 'correctAnswer', 'points', 'i', 'j', 'players', 'image'],
   components: {
     Player
   },
@@ -101,6 +101,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.body,
+.corner {
+  background-color: #fff;
 }
 
 .image {

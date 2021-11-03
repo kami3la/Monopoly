@@ -12,6 +12,7 @@
           :points='cell.points'
           :name='cell.name'
           :image='cell.image'
+          :correctAnswer='cell.correctAnswer'
         />
         <td class="inner" v-else-if='i==3 && j == 1'>
           <table class="players-info">
@@ -30,10 +31,18 @@
             </tr>
           </table>
           <div class="actions">
-            <div class="dices">
-              <Dice class="dice" v-for='(dice, i) in dices' :value='dice' :key="i" />
+            <div class="actions-role">
+              <div class="dices">
+                <Dice class="dice" v-for='(dice, i) in dices' :value='dice' :key="i" />
+              </div>
+              <button @click="roll">Rzuć kośćmi</button>
             </div>
-            <button @click="roll">Rzuć kośćmi</button>
+            <div class="actions-input" ref="inputWrapper">
+              <input placeholder="Wpisz odpowiedź..." id="input" />
+              <button @click="answer" type="submit" id="button">Wyślij</button>
+            </div>
+            <span class="actions-text1" ref="text1">Dobrze!</span>
+            <span class="actions-text2" ref="text2">Źle!</span>
           </div>
         </td>
       </template>
@@ -67,16 +76,24 @@ class DesktopCell {
 }
 
 class BuildingCell extends DesktopCell {
-  constructor(moveDir, id, description, points, name) {
+  constructor(moveDir, id, description, correctAnswer, points, name) {
     super(moveDir)
     this.id = id
     this.description = description
+    this.correctAnswer = correctAnswer
     this.points = points
     this.name = name
   }
 
-  onStop(player) {
-    player.points += this.points
+  onStop(player, cell) {
+    const input = document.getElementById('input');
+    const button = document.getElementById('button');
+
+    button.addEventListener('click', () => {
+      if (input.value === cell.correctAnswer) {
+        player.points += this.points
+      }
+    });
   }
 }
 
@@ -123,41 +140,41 @@ for (let i = 0; i < 6; i++) {
 }
 
 cells[5][13] = startCell
-cells[5][12] = new BuildingCell('left', 1, '2 · 3', 2, '+2 pkt')
+cells[5][12] = new BuildingCell('left', 1, '2 · 3', 6, 2, '+2 pkt')
 cells[5][11] = new ChallengeCell('left')
-cells[5][10] = new BuildingCell('left', 1, '3 · 3', 2, '+2 pkt')
-cells[5][9] = new BuildingCell('left', 2, '4 · 3', 3, '+3 pkt')
+cells[5][10] = new BuildingCell('left', 1, '3 · 3', 9, 2, '+2 pkt')
+cells[5][9] = new BuildingCell('left', 2, '4 · 3', 12, 3, '+3 pkt')
 cells[5][8] = new ChanceCell('left')
-cells[5][7] = new BuildingCell('left', 2, '4 · 4', 3, '+3 pkt')
-cells[5][6] = new BuildingCell('left', 2, '5 · 4', 3, '+3 pkt')
+cells[5][7] = new BuildingCell('left', 2, '4 · 4', 16, 3, '+3 pkt')
+cells[5][6] = new BuildingCell('left', 2, '5 · 4', 20, 3, '+3 pkt')
 cells[5][5] = new ChallengeCell('left')
-cells[5][4] = new BuildingCell('left', 3, '5 · 5', 4, '+4 pkt')
-cells[5][3] = new BuildingCell('left', 3, '6 · 4', 4, '+4 pkt')
-cells[5][2] = new BuildingCell('left', 3, '3 · 7', 4, '+4 pkt')
-cells[5][1] = new BuildingCell('left', 4, '7 · 6', 5, '+5 pkt')
+cells[5][4] = new BuildingCell('left', 3, '5 · 5', 25, 4, '+4 pkt')
+cells[5][3] = new BuildingCell('left', 3, '6 · 4', 24, 4, '+4 pkt')
+cells[5][2] = new BuildingCell('left', 3, '3 · 7', 21, 4, '+4 pkt')
+cells[5][1] = new BuildingCell('left', 4, '7 · 6', 42, 5, '+5 pkt')
 cells[5][0] = parkingCell
-cells[4][0] = new BuildingCell('up', 4, '5 · 7', 5, '+5 pkt')
-cells[3][0] = new BuildingCell('up', 4, '4 · 9', 5, '+5 pkt')
+cells[4][0] = new BuildingCell('up', 4, '5 · 7', 35, 5, '+5 pkt')
+cells[3][0] = new BuildingCell('up', 4, '4 · 9', 36, 5, '+5 pkt')
 cells[2][0] = new ChanceCell('up')
-cells[1][0] = new BuildingCell('up', 5, '5 · 9', 6, '+6 pkt')
+cells[1][0] = new BuildingCell('up', 5, '5 · 9', 45, 6, '+6 pkt')
 cells[0][0] = jailCell
-cells[0][1] = new BuildingCell('right', 5, '6 · 8', 6, '+6 pkt')
-cells[0][2] = new BuildingCell('right', 5, '7 · 7', 6, '+6 pkt')
-cells[0][3] = new BuildingCell('right', 6, '8 · 7', 7, '+7 pkt')
-cells[0][4] = new BuildingCell('right', 6, '5 · 11', 7, '+7 pkt')
-cells[0][5] = new BuildingCell('right', 6, '6 · 9', 7, '+7 pkt')
-cells[0][6] = new BuildingCell('right', 7, '7 · 9', 8, '+8 pkt')
-cells[0][7] = new BuildingCell('right', 7, '4 · 12', 8, '+8 pkt')
+cells[0][1] = new BuildingCell('right', 5, '6 · 8', 48, 6, '+6 pkt')
+cells[0][2] = new BuildingCell('right', 5, '7 · 7', 49, 6, '+6 pkt')
+cells[0][3] = new BuildingCell('right', 6, '8 · 7', 56, 7, '+7 pkt')
+cells[0][4] = new BuildingCell('right', 6, '5 · 11', 55, 7, '+7 pkt')
+cells[0][5] = new BuildingCell('right', 6, '6 · 9', 54, 7, '+7 pkt')
+cells[0][6] = new BuildingCell('right', 7, '7 · 9', 63, 8, '+8 pkt')
+cells[0][7] = new BuildingCell('right', 7, '4 · 12', 48, 8, '+8 pkt')
 cells[0][8] = new ChallengeCell('right')
-cells[0][9] = new BuildingCell('right', 7, '12 · 6', 8, '+8 pkt')
+cells[0][9] = new BuildingCell('right', 7, '12 · 6', 72, 8, '+8 pkt')
 cells[0][10] = new ChanceCell('right')
-cells[0][11] = new BuildingCell('right', 8, '8 · 8', 9, '+9 pkt')
-cells[0][12] = new BuildingCell('right', 8, '9 · 8', 9, '+9 pkt')
+cells[0][11] = new BuildingCell('right', 8, '8 · 8', 64, 9, '+9 pkt')
+cells[0][12] = new BuildingCell('right', 8, '9 · 8', 72, 9, '+9 pkt')
 cells[0][13] = toJailCell
-cells[1][13] = new BuildingCell('down', 8, '9 · 9', 9, '+9 pkt')
-cells[2][13] = new BuildingCell('down', 9, '9 · 12', 10, '+10 pkt')
-cells[3][13] = new BuildingCell('down', 9, '11 · 12', 10, '+10 pkt')
-cells[4][13] = new BuildingCell('down', 9, '11 · 11', 10, '+10 pkt')
+cells[1][13] = new BuildingCell('down', 8, '9 · 9', 81, 9, '+9 pkt')
+cells[2][13] = new BuildingCell('down', 9, '9 · 12', 108, 10, '+10 pkt')
+cells[3][13] = new BuildingCell('down', 9, '11 · 12', 132, 10, '+10 pkt')
+cells[4][13] = new BuildingCell('down', 9, '11 · 11', 121, 10, '+10 pkt')
 
 export default {
   name: 'Game',
@@ -187,7 +204,7 @@ export default {
     movePlayer() {
       let steps = this.dices.reduce((acc, val) => acc + val)
       let cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
-      const stepIterval = setInterval(() => {
+      const stepInterval = setInterval(() => {
         switch (cell.moveDir) {
           case 'up':
             this.currentPlayer.i -= 1
@@ -207,16 +224,40 @@ export default {
         cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
         cell.onStepOverStart(this.currentPlayer)
         steps -= 1
-        if (steps <= 0) {
-          clearInterval(stepIterval)
-          cell.onStop(this.currentPlayer)
-          const [d1, d2] = this.dices
-          if (d1 !== d2) {
-            // TODO: If dices are same for the third time go to jail
-            this.turn += 1
+        if (steps === 0) {
+          clearInterval(stepInterval)
+          this.onStepp(cell);
+          if (!cell.description) {
+            const [d1, d2] = this.dices
+            if (d1 !== d2) {
+              this.turn += 1;
+            }
           }
         }
       }, 10)
+    },
+    onStepp(cell) {
+      if (cell.description) {
+        this.$refs.inputWrapper.style.display = "flex";
+      }
+    },
+    answer() {
+      const cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
+      const input = document.getElementById('input');
+
+      this.$refs.inputWrapper.style.display = "none";
+      if (input.value == cell.correctAnswer) {
+        this.currentPlayer.points += cell.points;
+        setTimeout(() => this.$refs.text1.style.display = "flex", 0);
+        setTimeout(() => this.$refs.text1.style.display = "none", 1000);
+      } else {
+        setTimeout(() => this.$refs.text2.style.display = "flex", 0);
+        setTimeout(() => this.$refs.text2.style.display = "none", 1000);
+      }
+      const [d1, d2] = this.dices
+      if (d1 !== d2) {
+        this.turn += 1;
+      }
     }
   }
 }
@@ -225,33 +266,38 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .desk {
-  width: 90%;
-  height: 90vh;
+  width: 95%;
+  height: 95vh;
   display: grid;
   grid-template-rows: repeat(6, 1fr);
 }
 
 .desk > tr {
-  width: 100%;
+  width: calc(100% - 1px);
   display: flex;
   align-items: stretch;
   justify-content: space-between;
 }
 
-.desk .cell {
+.cell {
   border: 1px solid black;
-  width: calc((100% - 28px) / 14);
+  width: calc((100% / 14) - 2px);
   height: calc(100% - 2px);
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   align-content: flex-start;
+  justify-content: flex-start;
 }
 
 .inner {
   width: 30%;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 
 .players-info {
@@ -267,6 +313,13 @@ export default {
 
 .actions {
   display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+
+.actions-role,
+.actions-input {
+  display: flex;
   width: 100%;
   justify-content: space-evenly;
   margin-top: 1rem;
@@ -277,7 +330,35 @@ export default {
   margin-left: 0.5rem;
 }
 
-.actions button {
+.actions-role button,
+.actions-input button {
   width: 6rem;
+  cursor: pointer;
+}
+
+.actions-input input {
+  padding: 0.2rem 0.5rem;
+}
+
+.actions-input,
+.actions-text1,
+.actions-text2 {
+  display: none;
+}
+
+.actions-text1,
+.actions-text2 {
+  align-self: center;
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.actions-text1 {
+  color: #00FF00;
+}
+
+.actions-text2 {
+  color: #FF0000;
 }
 </style>
