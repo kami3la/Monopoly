@@ -14,7 +14,14 @@
           :image='cell.image'
           :correctAnswer='cell.correctAnswer'
         />
-        <td class="inner" v-else-if='i==3 && j == 1'>
+        <td class="options-wrapper" v-else-if='i==1 && j==1'>
+          <div class="options">
+            <button type="button" class="button-modal" @click="showModal">?</button>
+            <Modal v-show="isModalVisible" @close="closeModal" />
+          </div>
+        </td>
+        <td class="inner" v-else-if='i==2 && j == 1'>
+          <h1 class="title">MATMOPOLY</h1>
           <table class="players-info">
             <tr>
               <th v-for='player in players' :key='player.id'>
@@ -54,6 +61,7 @@
 import Cell from './Cell'
 import Player from './Player'
 import Dice from './Dice'
+import Modal from './Modal'
 import { Challenges } from '../constants/Challenges'
 
 const randomInteger = function (min, max) {
@@ -167,13 +175,15 @@ export default {
       throws: 0,
       turn: 0,
       players: [new DesktopPlayer(1), new DesktopPlayer(2), new DesktopPlayer(3), new DesktopPlayer(4)],
-      challenge: ''
+      challenge: null,
+      isModalVisible: false
     }
   },
   components: {
     Cell,
     Player,
-    Dice
+    Dice,
+    Modal
   },
   computed: {
     currentPlayer() {
@@ -186,13 +196,6 @@ export default {
       this.movePlayer();
     },
     movePlayer() {
-      if (this.throws === 2) {
-        this.throws = 0;
-        this.currentPlayer.points -= 30
-        this.currentPlayer.i = 0
-        this.currentPlayer.j = 0
-        this.turn += 1;
-      }
       let steps = this.dices.reduce((acc, val) => acc + val)
       let cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
       const stepInterval = setInterval(() => {
@@ -220,37 +223,51 @@ export default {
           if (!cell.description && cell.name !== 'challenge') {
             switch (cell.name) {
               case 'parking':
+                this.challenge = null;
                 break
               case 'jail':
+                this.challenge = null;
                 break
               case 'toJail':
                 this.currentPlayer.j -= 13
                 this.currentPlayer.points -= 30
                 break
             }
-            const [d1, d2] = this.dices
-            if (d1 !== d2) {
-              this.turn += 1;
-            } else {
-              this.throws += 1
-            }
           } else if (cell.name === 'challenge') {
             this.challenge = Challenges[randomInteger(0, 1)]
           }
-          this.onStep(cell);
+
+          const [d1, d2] = this.dices
+          if (d1 !== d2) {
+            this.throws = 0;
+            this.onStep(cell);
+          } else {
+            this.throws += 1
+            if (this.throws !== 3) {
+              this.onStep(cell);
+            } else {
+              this.throws = 0;
+              this.currentPlayer.points -= 30
+              this.currentPlayer.i = 0
+              this.currentPlayer.j = 0
+              this.turn += 1;
+            }
+          }
         }
       }, 10)
     },
     onStep(cell) {
-      if (cell.description || this.challenge.description) {
-        setTimeout(() => this.$refs.buttonRole.style.pointerEvents = "none", 0);
-        setTimeout(() => this.$refs.inputWrapper.style.display = "flex", 0);
-      }
-      if (this.challenge.description) {
+      if (this.challenge) {
         const element = document.createElement('p');
         const text = document.createTextNode(this.challenge.description + '?');
         element.appendChild(text);
         this.$refs.inputWrapper.prepend(element);
+      }
+      if (cell.description || this.challenge) {
+        setTimeout(() => this.$refs.buttonRole.style.pointerEvents = "none", 0);
+        setTimeout(() => this.$refs.inputWrapper.style.display = "flex", 0);
+      } else {
+        this.turn += 1;
       }
     },
     answer() {
@@ -259,7 +276,7 @@ export default {
       const oldPoints = this.currentPlayer.points;
 
       this.$refs.inputWrapper.style.display = "none";
-      if (input.value == cell.correctAnswer || (this.challenge.correctAnswer ? (this.challenge.correctAnswer.indexOf(input.value) != -1) : false)) {
+      if (input.value == cell.correctAnswer || (this.challenge ? (this.challenge.correctAnswer.indexOf(input.value) != -1) : false)) {
         if (cell.points) {
           this.currentPlayer.points += cell.points;
         } else {
@@ -267,18 +284,23 @@ export default {
         }
         setTimeout(() => this.$refs.text1.style.display = "flex", 0);
         setTimeout(() => this.$refs.text1.style.display = "none", 1000);
-        this.challenge = '';
+        this.challenge = null;
       } else {
         setTimeout(() => this.$refs.text2.style.display = "flex", 0);
         setTimeout(() => this.$refs.text2.style.display = "none", 1000);
       }
+
       const [d1, d2] = this.dices
       if (d1 !== d2 || (d1 === d2 && oldPoints === this.currentPlayer.points)) {
-        this.turn += 1;
         this.throws = 0;
-      } else {
-        this.throws += 1
+        this.turn += 1;
       }
+    },
+    showModal() {
+      this.isModalVisible = true
+    },
+    closeModal() {
+      this.isModalVisible = false
     }
   }
 }
@@ -311,6 +333,29 @@ export default {
   justify-content: flex-start;
 }
 
+.options-wrapper {
+  width: calc(100% - 2*((100% / 14) - 2px));
+  display: flex;
+  justify-content: right;
+}
+
+.options {
+  width: 10%;
+  height: 50%;
+  display: flex;
+  justify-content:flex-end;
+  align-items: flex-start;
+}
+
+.button-modal {
+  height: fit-content;
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: 30px/10px;
+  margin: 1rem;
+  cursor: pointer;
+}
+
 .inner {
   width: 30%;
   display: flex;
@@ -319,6 +364,12 @@ export default {
   left: 0;
   right: 0;
   margin: auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 3em;
 }
 
 .players-info {

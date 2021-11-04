@@ -1,4 +1,4 @@
-<template lang="slm">
+<template>
   <span class="dice" :class="diceClass"></span>
 </template>
 

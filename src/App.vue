@@ -30,4 +30,17 @@ export default {
   align-items: center;
   flex-direction: column;
 }
+
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #4AAE9B;
+  border-radius: 30px;
+}
 </style>
