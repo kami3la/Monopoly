@@ -6,7 +6,7 @@
           v-if='cell'
           :i='i'
           :j='j'
-          :players='players'
+          :players='gamePlayers'
           :description='cell.description'
           :id='cell.id'
           :points='cell.points'
@@ -16,25 +16,43 @@
         />
         <td class="options-wrapper" v-else-if='i==1 && j==1'>
           <div class="options">
-            <button type="button" class="button-modal" @click="showModal">?</button>
-            <Modal v-show="isModalVisible" @close="closeModal" />
+            <button type="button" class="button-info" @click='showModal'>?</button>
+            <Modal v-show="isModalVisible" @close='closeModal' />
+            <button type="button" class="button-close" @click='ifEndGameOpen'>x</button>
+            <div v-show="isEndModalVisible" class="modal-ifEnd-wrapper" @click='ifEndGameClose'>
+              <div class="modal-ifEnd" @click.stop="">
+                <div class="modal-ifEnd-header">
+                  <slot name="header"><h1>Chcesz zakończyć rozgrywkę?</h1></slot>
+                </div>
+                <div class="modal-ifEnd-body">
+                  <slot name="body">
+                    <button type="button" class="modal-ifEnd-button" @click='end'>Tak</button>
+                    <button type="button" class="modal-ifEnd-button" @click='ifEndGameClose'>Nie</button>
+                    <End :players='gamePlayers' v-show='endGame' />
+                  </slot>
+                </div>
+              </div>
+            </div>
           </div>
         </td>
         <td class="inner" v-else-if='i==2 && j == 1'>
           <h1 class="title">MATMOPOLY</h1>
           <table class="players-info">
             <tr>
-              <th v-for='player in players' :key='player.id'>
-                <span v-show='player === currentPlayer' class="turn">↓</span>
+              <th v-for='player in gamePlayers' :key='player.id'>
+                <span v-show='player.id === currentPlayer.id' class="turn">↓</span>
               </th>
             </tr>
             <tr>
-              <th v-for='player in players' :key='player.id'>
-                <Player :id='player.id' />
+              <th v-for='player in gamePlayers' :key='player.id'>
+                <Player :id='player.id' :name='player.name' />
               </th>
             </tr>
             <tr>
-              <td v-for='player in players' :key='player.id'>{{ player.points }}</td>
+              <td v-for='player in gamePlayers' :key='player.name' class="table-name">{{ player.name }}</td>
+            </tr>
+            <tr>
+              <td v-for='player in gamePlayers' :key='player.id' class="table-points">{{ player.points }}</td>
             </tr>
           </table>
           <div class="actions">
@@ -62,6 +80,7 @@ import Cell from './Cell'
 import Player from './Player'
 import Dice from './Dice'
 import Modal from './Modal'
+import End from './End'
 import { Challenges } from '../constants/Challenges'
 
 const randomInteger = function (min, max) {
@@ -110,11 +129,12 @@ class StartCell extends DesktopCell {
 }
 
 class DesktopPlayer {
-  constructor(id) {
+  constructor(id, name) {
     this.i = 5
     this.j = 13
     this.points = 0
     this.id = id
+    this.name = name
   }
 }
 
@@ -168,27 +188,38 @@ cells[4][13] = new BuildingCell('down', 9, '11 · 11', 121, 10, '+10 pkt')
 
 export default {
   name: 'Game',
+  props: ['players'],
   data() {
     return {
       dices: [6, 6],
       cells: cells,
       throws: 0,
       turn: 0,
-      players: [new DesktopPlayer(1), new DesktopPlayer(2), new DesktopPlayer(3), new DesktopPlayer(4)],
+      gamePlayers: [],
       challenge: null,
-      isModalVisible: false
+      isModalVisible: false,
+      isEndModalVisible: false,
+      endGame: false
     }
   },
   components: {
     Cell,
     Player,
     Dice,
-    Modal
+    Modal,
+    End
   },
   computed: {
     currentPlayer() {
-      return this.players[this.turn % this.players.length];
+      return this.gamePlayers[this.turn % this.players.length];
     }
+  },
+  mounted() {
+    const playersTab = []
+    for (const p of this.players) {
+      playersTab.push(new DesktopPlayer(p.id, p.name));
+    }
+    this.gamePlayers = playersTab;
   },
   methods: {
     roll() {
@@ -198,6 +229,7 @@ export default {
     movePlayer() {
       let steps = this.dices.reduce((acc, val) => acc + val)
       let cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
+      this.challenge = null;
       const stepInterval = setInterval(() => {
         switch (cell.moveDir) {
           case 'up':
@@ -234,7 +266,7 @@ export default {
                 break
             }
           } else if (cell.name === 'challenge') {
-            this.challenge = Challenges[randomInteger(0, 1)]
+            this.challenge = Challenges[randomInteger(0, 9)]
           }
 
           const [d1, d2] = this.dices
@@ -267,7 +299,7 @@ export default {
         setTimeout(() => this.$refs.buttonRole.style.pointerEvents = "none", 0);
         setTimeout(() => this.$refs.inputWrapper.style.display = "flex", 0);
       } else {
-        this.turn += 1;
+        this.throws !== 0 ? null : this.turn += 1;
       }
     },
     answer() {
@@ -301,6 +333,15 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false
+    },
+    ifEndGameOpen() {
+      this.isEndModalVisible = true
+    },
+    ifEndGameClose() {
+      this.isEndModalVisible = false
+    },
+    end() {
+      this.endGame = true
     }
   }
 }
@@ -340,20 +381,72 @@ export default {
 }
 
 .options {
-  width: 10%;
-  height: 50%;
+  width: fit-content;
+  height: fit-content;
   display: flex;
   justify-content:flex-end;
   align-items: flex-start;
+  margin: 1rem 0;
 }
 
-.button-modal {
+.modal-ifEnd-wrapper {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.modal-ifEnd {
+  background: #FFFFFF;
+  box-shadow: 2px 2px 20px 1px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 30px/10px;
+  cursor: default;
+  width: 50vw;
+  height: 30vh;
+  align-items: center;
+}
+
+.modal-ifEnd-header {
+  border-bottom: 1px solid #eeeeee;
+  color: #4AAE9B;
+  padding: 1.5rem 2rem;
+}
+
+.modal-ifEnd-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 50%;
+}
+
+.modal-ifEnd-button {
+  height: fit-content;
+  padding: 0.8rem 2.5rem;
+  cursor: pointer;
+}
+
+.button-info,
+.button-close {
   height: fit-content;
   width: fit-content;
   padding: 0.5rem;
   border-radius: 30px/10px;
-  margin: 1rem;
   cursor: pointer;
+}
+
+.button-close {
+  margin: 0 0.8rem;
 }
 
 .inner {
@@ -377,10 +470,14 @@ export default {
   width: 100%;
 }
 
-.players-info td {
+.table-points {
   border: solid black 1px;
   text-align: right;
   padding: 0 5px;
+}
+
+.table-name {
+  text-align: center;
 }
 
 .actions {

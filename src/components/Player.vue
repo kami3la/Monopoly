@@ -5,7 +5,7 @@
 <script>
 export default {
   name: 'Player',
-  props: ['id', 'points', 'i', 'j']
+  props: ['id', 'name', 'points', 'i', 'j']
 }
 </script>
 

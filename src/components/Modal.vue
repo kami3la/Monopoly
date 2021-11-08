@@ -17,7 +17,7 @@
           <div class="zasady">
             <h2>Jak grać</h2>
             <p>
-              Pionki graczy znajdują się na polu Start. Kolejność ruchów graczy jest zawsze taka sama i jest zależna od przyjmowanych kolorów pionków.
+              Pionki graczy znajdują się na polu Start. Kolejność ruchów graczy jest zawsze taka sama i jest zależna od kolorów pionków.
               Każdy gracz po kolei rzuca obiema kośćmi na raz i automatycznie przesuwa się o wylosowaną ilość oczek (ruch zgodny z kierunkiem wskazówek zegara).
             </p>
             <h4>Pola</h4>
@@ -27,7 +27,7 @@
                 <li><em>oznaczonym kolorem - </em>musi wykonać działanie, które się na tym polu znajduje, wpisać je w okienko i zatwierdzić swoją odpowiedź.
                 Za poprawną odpowiedź gracz otrzymuje ilość punktów widniejących na polu.</li>
                 <li><em>z wykrzyknikiem - </em>czeka go wyzwanie. Na planszy wyświetli się liczba i gracz musi wpisać w okienko działanie, którego wynikiem jest owa liczba.
-                Za poprawną odpowiedź gracz otrzymuje 10 punktów.</li>
+                Działaniem nie może być mnożenie przez 1. Za poprawną odpowiedź gracz otrzymuje 10 punktów.</li>
                 <li><em>więzenia, startu lub białego pola - </em>nic się nie dzieje.</li>
                 <li><em>z kajdankami - </em>idzie do więzenia, czyli automatycznie cofa się na polę więzienia i dostaje karę pod postacią 30 punktów ujemnych.</li>
               </ul>
@@ -66,7 +66,7 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.3);;
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
