@@ -471,6 +471,11 @@ export default {
 
 .players-info {
   border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.players-info td {
   width: 100%;
 }
 
