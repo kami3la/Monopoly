@@ -1,24 +1,13 @@
-# monopoly
+# Matmopoly
 
-## Project setup
-```
-yarn install
-```
+Gra Monopoly w wersji matematycznej.
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+Znajduje się pod linkiem - [here](https://kami3la.github.io/Monopoly/).
 
-### Compiles and minifies for production
-```
-yarn build
-```
 
-### Lints and fixes files
-```
-yarn lint
-```
+## Cel
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Projekt powstał w celu zwiększenia biegłości w obliczaniu tabliczki mnożenia wśród uczniów klas 4-8, gdyż zostały dostrzeżone ewidentne braki w zakresie tej umiejętności.
+
+## Technologia
+- Vue.js
