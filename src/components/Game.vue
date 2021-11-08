@@ -15,7 +15,7 @@
           :correctAnswer='cell.correctAnswer'
         />
         <td class="options-wrapper" v-else-if='i==1 && j==1'>
-          <div class="options">
+          <div class="options" :style="move ? {'display': 'none'} : {'display': 'auto'}">
             <button type="button" class="button-info" @click='showModal'>?</button>
             <Modal v-show="isModalVisible" @close='closeModal' />
             <button type="button" class="button-close" @click='ifEndGameOpen'>x</button>
@@ -199,7 +199,8 @@ export default {
       challenge: null,
       isModalVisible: false,
       isEndModalVisible: false,
-      endGame: false
+      endGame: false,
+      move: false
     }
   },
   components: {
@@ -227,6 +228,7 @@ export default {
       this.movePlayer();
     },
     movePlayer() {
+      this.move = true
       let steps = this.dices.reduce((acc, val) => acc + val)
       let cell = this.cells[this.currentPlayer.i][this.currentPlayer.j]
       this.challenge = null;
@@ -327,6 +329,8 @@ export default {
         this.throws = 0;
         this.turn += 1;
       }
+
+      this.move = false
     },
     showModal() {
       this.isModalVisible = true
