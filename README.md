@@ -9,5 +9,5 @@ Znajduje się pod linkiem - [here](https://kami3la.github.io/Monopoly/).
 
 Projekt powstał w celu zwiększenia biegłości w obliczaniu tabliczki mnożenia wśród uczniów klas 4-8, gdyż zostały dostrzeżone ewidentne braki w zakresie tej umiejętności.
 
-## Technologia
+## Technologie
 - Vue.js
