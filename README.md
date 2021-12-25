@@ -1,8 +1,8 @@
 # Matmopoly
 
-Gra Monopoly w wersji matematycznej.
+Gra Matmopoly w wersji matematycznej.
 
-Znajduje się pod linkiem - [here](https://kami3la.github.io/Monopoly/).
+Znajduje się pod linkiem - [tutaj](https://kami3la.github.io/Monopoly/).
 
 
 ## Cel
