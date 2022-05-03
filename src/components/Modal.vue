@@ -10,7 +10,7 @@
           <div class="cel">
             <h2>Cel gry</h2>
             <p>
-              Gra może trwać dowolną ilość czasu. Gracze mogą zakończyć rozgrywkę poprzez naciśnięcie przycisku wyjścia oznaczonego ikonką .
+              Gra może trwać dowolną ilość czasu. Gracze mogą zakończyć rozgrywkę poprzez naciśnięcie przycisku wyjścia oznaczonego ikonką X.
               Wygrywa gracz, który w momencie zakończenia rozgrywki posiada największą ilość punktów.
             </p>
           </div>
@@ -25,13 +25,14 @@
               Jeśli gracz stanie na polu:
               <ul class="zasady-pola">
                 <li><em>oznaczonym kolorem - </em>musi wykonać działanie, które się na tym polu znajduje, wpisać je w okienko i zatwierdzić swoją odpowiedź.
-                Za poprawną odpowiedź gracz otrzymuje ilość punktów widniejących na polu.</li>
+                Za poprawną odpowiedź gracz otrzymuje ilość punktów widniejącą na polu. Przykładowe działanie: <em>5*5</em>.</li>
                 <li><em>z wykrzyknikiem - </em>czeka go wyzwanie. Na planszy wyświetli się liczba i gracz musi wpisać w okienko działanie, którego wynikiem jest owa liczba.
-                Działaniem nie może być mnożenie przez 1. Za poprawną odpowiedź gracz otrzymuje 10 punktów.</li>
-                <li><em>więzenia, startu lub białego pola - </em>nic się nie dzieje.</li>
-                <li><em>z kajdankami - </em>idzie do więzenia, czyli automatycznie cofa się na polę więzienia i dostaje karę pod postacią 30 punktów ujemnych.</li>
+                Działaniem nie może być mnożenie przez 1. Za poprawną odpowiedź gracz otrzymuje 10 punktów. Przykładowe działanie do wpisania: <em>5*5</em>.</li>
+                <li><em>więzienia, startu lub białego pola - </em>nic się nie dzieje.</li>
+                <li><em>z kajdankami - </em>idzie do więzienia, czyli automatycznie cofa się na polę więzienia i dostaje karę pod postacią 30 punktów ujemnych.</li>
               </ul>
-              Za niepoprawny wynik gracz nie otrzymuje punktów ujemnych.
+              Za niepoprawny wynik gracz nie otrzymuje punktów ujemnych.<br><br>
+              Przykładowe działanie gracz powinien wpisywać bez białych znaków, tzn. dokładnie w formie: <em>'liczba*liczba'</em>.
             </p>
             <h4>Inne zasady</h4>
             <p>

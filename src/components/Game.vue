@@ -63,7 +63,7 @@
               <button @click="roll" ref="buttonRole">Rzuć kośćmi</button>
             </div>
             <div class="actions-input" ref="inputWrapper">
-              <input placeholder="Wpisz odpowiedź..." id="input" />
+              <input placeholder="Wpisz odpowiedź..." id="input" @keyup.enter="answer" />
               <button @click="answer" type="submit" id="button">Wyślij</button>
             </div>
             <span class="actions-text1" ref="text1">Dobrze!</span>
@@ -467,6 +467,12 @@ export default {
   text-align: center;
   margin-bottom: 2rem;
   font-size: 3em;
+}
+
+@media (min-width: 1600px) {
+  .title {
+    margin-bottom: .5rem;
+  }
 }
 
 .players-info {
