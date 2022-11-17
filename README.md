@@ -1,13 +1,13 @@
 # Matmopoly
 
-Gra Matmopoly w wersji matematycznej.
+Monopoly game in a mathematical version.
 
-Znajduje się pod linkiem - [tutaj](https://kami3la.github.io/Monopoly/).
+It is at the link - [here](https://kami3la.github.io/Monopoly/).
 
 
-## Cel
+## Purpose
 
-Projekt powstał w celu zwiększenia biegłości w obliczaniu tabliczki mnożenia wśród uczniów klas 4-8, gdyż zostały dostrzeżone ewidentne braki w zakresie tej umiejętności.
+The project was created to increase the proficiency in calculating the multiplication table among students of grades 4-8, as evident deficiencies in this skill were noticed.
 
-## Technologie
+## Technologies
 - Vue.js
